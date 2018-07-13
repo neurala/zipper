@@ -322,6 +322,7 @@ source_group(minizip FILES ${MINIZIP_SOURCES})
 file(GLOB ZIPPER_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/zipper/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/zipper/*.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/zipper/includes/*.h
 )
 source_group(zipper FILES ${ZIPPER_SOURCES})
 
@@ -351,11 +352,13 @@ endif()
 
 option(BUILD_STATIC_VERSION "Build the static version of the library." ON)
 if (BUILD_STATIC_VERSION)
-  add_library (${ZIPPER_LIBRARY}-static STATIC ${ZIPPER_SOURCES} ${MINIZIP_SOURCES})
+  add_library (${ZIPPER_LIBRARY} STATIC ${ZIPPER_SOURCES} ${MINIZIP_SOURCES})
+  target_include_directories(${ZIPPER_LIBRARY} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/zipper/includes/)
+
+  target_link_libraries(${ZIPPER_LIBRARY} ${LIBZ_LIBRARY} ${EXTRA_LIBS})
   
-  target_link_libraries(${ZIPPER_LIBRARY}-static ${LIBZ_LIBRARY} ${EXTRA_LIBS})
-  
-  INSTALL(TARGETS ${ZIPPER_LIBRARY}-static
+  set(ZIPPER_Libs ${ZIPPER_LIBRARY} CACHE INTERNAL "zipper library target(s)")
+  INSTALL(TARGETS ${ZIPPER_LIBRARY}
           RUNTIME DESTINATION bin
           LIBRARY DESTINATION lib
           ARCHIVE DESTINATION lib
@@ -364,7 +367,7 @@ endif()
 
 
 
-option(BUILD_TEST "Build the test program." ON)
+option(BUILD_TEST "Build the test program." OFF)
 if (BUILD_TEST)
   enable_testing()
 
@@ -383,7 +386,7 @@ if (BUILD_TEST)
   include(CTest)
 
   add_executable(${ZIPPER_LIBRARY}-test ${TEST_SOURCES})
-  target_link_libraries(${ZIPPER_LIBRARY}-test  ${ZIPPER_LIBRARY}-static ${LIBZ_LIBRARY} ${EXTRA_LIBS})
+  target_link_libraries(${ZIPPER_LIBRARY}-test  ${ZIPPER_LIBRARY} ${LIBZ_LIBRARY} ${EXTRA_LIBS})
 
   add_test(
     NAME test_zipper_run
@@ -395,7 +398,7 @@ if (BUILD_TEST)
   )
 endif()
 
-file(GLOB ZIPPER_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/zipper/*.h ${CMAKE_CURRENT_SOURCE_DIR}/minizip/*.h  )
+file(GLOB ZIPPER_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/zipper/includes/*.h ${CMAKE_CURRENT_SOURCE_DIR}/zipper/*.h ${CMAKE_CURRENT_SOURCE_DIR}/minizip/*.h  )
 install(FILES 
         ${ZIPPER_HEADERS}
         DESTINATION include/zipper
