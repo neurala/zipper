@@ -502,9 +502,9 @@ namespace zipper {
   }
 
   Unzipper::Unzipper(const std::string& zipname)
-    : m_ibuffer(*(new std::stringstream())) //not used but using local variable throws exception
+    : m_zipname(zipname)
+    , m_ibuffer(*(new std::stringstream())) //not used but using local variable throws exception
     , m_vecbuffer(*(new std::vector<unsigned char>())) //not used but using local variable throws exception
-    , m_zipname(zipname)
     , m_usingMemoryVector(false)
     , m_usingStream(false)
     , m_impl(new Impl(*this))
@@ -519,10 +519,10 @@ namespace zipper {
   }
 
   Unzipper::Unzipper(const std::string& zipname, const std::string& password)
-    : m_ibuffer(*(new std::stringstream())) //not used but using local variable throws exception
-    , m_vecbuffer(*(new std::vector<unsigned char>())) //not used but using local variable throws exception
+    : m_password(password)
     , m_zipname(zipname)
-    , m_password(password)
+    , m_ibuffer(*(new std::stringstream())) //not used but using local variable throws exception
+    , m_vecbuffer(*(new std::vector<unsigned char>())) //not used but using local variable throws exception
     , m_usingMemoryVector(false)
     , m_usingStream(false)
     , m_impl(new Impl(*this))
