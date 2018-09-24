@@ -266,8 +266,8 @@ else()
    
        if(NOT CYGWIN)
            # on cygwin all code is position independent so -fPIC is not needed
-           set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing -fPIC")
-           set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -fPIC")
+           set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing -fPIC -w")
+           set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -fPIC -w")
        endif()
    
        set(BUILD_DEFINITIONS "${BUILD_DEFINITIONS} -DLINUX")
