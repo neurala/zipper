@@ -7,8 +7,8 @@
 ###############################################################################
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
-cmake_minimum_required(VERSION 2.6)
-project(zipper)
+cmake_minimum_required(VERSION 3.2)
+project(zipper C CXX)
 
 include (CMakeTestCCompiler)
 include (CheckCSourceCompiles)
@@ -74,7 +74,9 @@ else()
     set(ADDITIONAL_LIB_DIRS "/usr/lib64" "/usr/lib/x86_64-linux-gnu/")
 endif()
 
-include(CPack)
+if (ZIPPER_DO_PACKAGING)
+	include(CPack)
+endif()
 
 # Add an option to compile with all warnings shown
 option(WITH_WALL     "Compile with -Wall, so that the compiler will display all warnings." OFF)
