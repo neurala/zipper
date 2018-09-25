@@ -345,7 +345,7 @@ if (ZIPPER_BUILD_SHARED_VERSION)
 
 	target_link_libraries(${ZIPPER_LIBRARY} ${LIBZ_LIBRARY} ${EXTRA_LIBS})
 
-	if (ZIPPER_DO_PACKAGING)
+	if (ZIPPER_INSTALL)
 		install(TARGETS ${ZIPPER_LIBRARY}
 		        RUNTIME DESTINATION bin
 		        LIBRARY DESTINATION lib
@@ -362,7 +362,7 @@ if (ZIPPER_BUILD_STATIC_VERSION)
   target_link_libraries(${ZIPPER_LIBRARY} ${LIBZ_LIBRARY} ${EXTRA_LIBS})
   
   set(ZIPPER_Libs ${ZIPPER_LIBRARY} CACHE INTERNAL "zipper library target(s)")
-	if (ZIPPER_DO_PACKAGING)
+  if (ZIPPER_INSTALL)
 		install(TARGETS ${ZIPPER_LIBRARY}
 		        RUNTIME DESTINATION bin
 		        LIBRARY DESTINATION lib
@@ -405,7 +405,7 @@ if (ZIPPER_BUILD_TEST)
 endif()
 
 file(GLOB ZIPPER_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/zipper/includes/*.h ${CMAKE_CURRENT_SOURCE_DIR}/zipper/*.h ${CMAKE_CURRENT_SOURCE_DIR}/minizip/*.h  )
-if (ZIPPER_DO_PACKAGING)
+if (ZIPPER_INSTALL)
 		install(FILES 
 		        ${ZIPPER_HEADERS}
 		        DESTINATION include/zipper
