@@ -76,6 +76,9 @@ if (ZIPPER_DO_PACKAGING)
 	endif()
 
 	include(CPack)
+
+	# Force install, otherwise there is nothing to pack
+	set(ZIPPER_INSTALL TRUE)
 endif()
 
 # Add an option to compile with all warnings shown
@@ -335,21 +338,23 @@ file(GLOB TEST_SOURCES
 
 option(ZIPPER_BUILD_SHARED_VERSION "Build the shared version of the library." OFF)
 if (ZIPPER_BUILD_SHARED_VERSION)
-  add_library (${ZIPPER_LIBRARY} SHARED ${ZIPPER_SOURCES} ${MINIZIP_SOURCES} )
-  
-  if (UNIX)
-    SET_TARGET_PROPERTIES(${ZIPPER_LIBRARY} PROPERTIES
-                          SOVERSION ${ZIPPER_VERSION_MAJOR}
-                          VERSION ${ZIPPER_VERSION_MAJOR}.${ZIPPER_VERSION_MINOR}.${ZIPPER_VERSION_PATCH})
-  endif()
-  
-  target_link_libraries(${ZIPPER_LIBRARY} ${LIBZ_LIBRARY} ${EXTRA_LIBS})
-  
-  INSTALL(TARGETS ${ZIPPER_LIBRARY}
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib
-          ARCHIVE DESTINATION lib
-  )
+	add_library (${ZIPPER_LIBRARY} SHARED ${ZIPPER_SOURCES} ${MINIZIP_SOURCES} )
+
+	if (UNIX)
+		SET_TARGET_PROPERTIES(${ZIPPER_LIBRARY} PROPERTIES
+			SOVERSION ${ZIPPER_VERSION_MAJOR}
+			VERSION ${ZIPPER_VERSION_MAJOR}.${ZIPPER_VERSION_MINOR}.${ZIPPER_VERSION_PATCH})
+	endif()
+
+	target_link_libraries(${ZIPPER_LIBRARY} ${LIBZ_LIBRARY} ${EXTRA_LIBS})
+
+	if (ZIPPER_INSTALL)
+		install(TARGETS ${ZIPPER_LIBRARY}
+		        RUNTIME DESTINATION bin
+		        LIBRARY DESTINATION lib
+		        ARCHIVE DESTINATION lib
+		        )
+	endif()
 endif()
 
 option(ZIPPER_BUILD_STATIC_VERSION "Build the static version of the library." ON)
@@ -360,11 +365,13 @@ if (ZIPPER_BUILD_STATIC_VERSION)
   target_link_libraries(${ZIPPER_LIBRARY} ${LIBZ_LIBRARY} ${EXTRA_LIBS})
   
   set(ZIPPER_Libs ${ZIPPER_LIBRARY} CACHE INTERNAL "zipper library target(s)")
-  INSTALL(TARGETS ${ZIPPER_LIBRARY}
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib
-          ARCHIVE DESTINATION lib
-  )
+  if (ZIPPER_INSTALL)
+		install(TARGETS ${ZIPPER_LIBRARY}
+		        RUNTIME DESTINATION bin
+		        LIBRARY DESTINATION lib
+		        ARCHIVE DESTINATION lib
+		)
+	endif()
 endif()
 
 
@@ -401,10 +408,12 @@ if (ZIPPER_BUILD_TEST)
 endif()
 
 file(GLOB ZIPPER_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/zipper/includes/*.h ${CMAKE_CURRENT_SOURCE_DIR}/zipper/*.h ${CMAKE_CURRENT_SOURCE_DIR}/minizip/*.h  )
-install(FILES 
-        ${ZIPPER_HEADERS}
-        DESTINATION include/zipper
-)
+if (ZIPPER_INSTALL)
+		install(FILES 
+		        ${ZIPPER_HEADERS}
+		        DESTINATION include/zipper
+		)
+endif()
 
 if (ZYPPER_PRINT_STATUS)
 message(STATUS "
