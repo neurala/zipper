@@ -76,6 +76,9 @@ if (ZIPPER_DO_PACKAGING)
 	endif()
 
 	include(CPack)
+
+	# Force install, otherwise there is nothing to pack
+	set(ZIPPER_INSTALL TRUE)
 endif()
 
 # Add an option to compile with all warnings shown
