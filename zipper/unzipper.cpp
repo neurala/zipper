@@ -1,4 +1,5 @@
 #include "includes/unzipper.h"
+#include "CDirEntry.h"
 #include "defs.h"
 #include "tools.h"
 
@@ -430,7 +431,7 @@ namespace zipper {
 
     bool extractEntry(const std::string& name, const std::string& destination)
     {
-      std::string outputFile = destination.empty() ? name : destination + "\\" + name;
+      std::string outputFile = destination.empty() ? name : destination + CDirEntry::Separator + name;
 
       if (locateEntry(name))
       {
