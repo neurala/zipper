@@ -10,6 +10,12 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 cmake_minimum_required(VERSION 3.2)
 project(zipper C CXX)
 
+# Set useful CMake flags
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+set(CMAKE_DEBUG_POSTFIX "d")
+
 include (CMakeTestCCompiler)
 include (CheckCSourceCompiles)
 include (CheckCXXSourceCompiles)
@@ -93,11 +99,8 @@ if(ZIPPER_WITH_WALL)
     endif()
 endif()
 
-if (UNIX)
-  set(ZIPPER_LIBRARY Zipper)
-else()
-  set(ZIPPER_LIBRARY libZipper)
-endif()
+set(ZIPPER_LIBRARY Zipper)
+
 # Set build type default.
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING
   "Choose the type of build to perform. The options are: None (CMAKE_CXX_FLAGS
@@ -336,6 +339,8 @@ file(GLOB TEST_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/test/*.hpp
 )
 
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt" VERSION)
+
 option(ZIPPER_BUILD_SHARED_VERSION "Build the shared version of the library." OFF)
 if (ZIPPER_BUILD_SHARED_VERSION)
 	add_library (${ZIPPER_LIBRARY} SHARED ${ZIPPER_SOURCES} ${MINIZIP_SOURCES} )
@@ -395,7 +400,7 @@ if (ZIPPER_BUILD_TEST)
   include(CTest)
 
   add_executable(${ZIPPER_LIBRARY}-test ${TEST_SOURCES})
-  target_link_libraries(${ZIPPER_LIBRARY}-test  ${ZIPPER_LIBRARY} ${LIBZ_LIBRARY} ${EXTRA_LIBS})
+  target_link_libraries(${ZIPPER_LIBRARY}-test  static${ZIPPER_LIBRARY} ${LIBZ_LIBRARY} ${EXTRA_LIBS})
 
   add_test(
     NAME test_zipper_run
@@ -408,11 +413,33 @@ if (ZIPPER_BUILD_TEST)
 endif()
 
 file(GLOB ZIPPER_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/zipper/includes/*.h ${CMAKE_CURRENT_SOURCE_DIR}/zipper/*.h ${CMAKE_CURRENT_SOURCE_DIR}/minizip/*.h  )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/zipperConfig.cmake.in
+               ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+               @ONLY)
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/zipper.pc.cmakein
+		${PROJECT_BINARY_DIR}/zipper.pc
+               @ONLY)
+
 if (ZIPPER_INSTALL)
-		install(FILES 
-		        ${ZIPPER_HEADERS}
-		        DESTINATION include/zipper
-		)
+  install(TARGETS ${TARGET_LIST} EXPORT ${PROJECT_NAME}
+    RUNTIME DESTINATION bin COMPONENT lib
+    LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT lib
+    ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT lib
+    INCLUDES DESTINATION include
+    PUBLIC_HEADER DESTINATION include/zipper)
+
+  file(GLOB ZIPPER_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/zipper/*.h ${CMAKE_CURRENT_SOURCE_DIR}/minizip/*.h  )
+  install(FILES 
+      ${ZIPPER_HEADERS}
+      DESTINATION include/zipper)
+
+  install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+      DESTINATION lib${LIB_SUFFIX}/cmake)
+
+  install(EXPORT ${PROJECT_NAME}
+      DESTINATION lib${LIB_SUFFIX}/cmake
+      FILE ${PROJECT_NAME}Targets.cmake)
 endif()
 
 if (ZYPPER_PRINT_STATUS)
