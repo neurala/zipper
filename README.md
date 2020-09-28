@@ -1,4 +1,5 @@
 ![Zipper](https://github.com/sebastiandev/zipper/blob/master/logo.png)
+[![Build Status](https://travis-ci.org/sebastiandev/zipper.svg?branch=development)](https://travis-ci.org/sebastiandev/zipper) [![Build Status](https://ci.appveyor.com/api/projects/status/github/sebastiandev/zipper)](https://ci.appveyor.com/api/projects/status/github/sebastiandev/zipper)
 
 C++ wrapper around minizip compression library
 
@@ -25,7 +26,7 @@ the repo and it gets compiled with the project.
 #### Download dependencies
 
 ```shell
-sudo apt-get install zlib-dev  # for ubuntu
+sudo apt-get install zlib1g-dev  # for ubuntu
 
 sudo dnf install zlib-devel  # for fedora
 sudo dnf install gcc-c++  # for fedora
