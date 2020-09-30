@@ -403,11 +403,6 @@ namespace zipper {
       return entrylist;
     }
 
-#ifdef _WIN32
-    static constexpr auto osSeparator = '\\';
-#else
-	static constexpr auto osSeparator = '/';
-#endif
 
     bool extractAll(const std::string& destination, const std::map<std::string, std::string>& alternativeNames)
     {
@@ -597,4 +592,3 @@ namespace zipper {
   }
 
 }
-
