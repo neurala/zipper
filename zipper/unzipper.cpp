@@ -1,4 +1,5 @@
-#include "includes/unzipper.h"
+#include "unzipper.h"
+#include "CDirEntry.h"
 #include "defs.h"
 #include "tools.h"
 
@@ -239,7 +240,8 @@ namespace zipper {
 
       if (output_file.good())
       {
-    	err = extractToStream(output_file, info);
+        if (UNZ_OK == extractToStream(output_file, info))
+          err = UNZ_OK;
 
         output_file.close();
 
@@ -257,9 +259,7 @@ namespace zipper {
 
     int extractToStream(std::ostream& stream, ZipEntry& info)
     {
-      size_t err = UNZ_ERRNO;
-
-      err = unzOpenCurrentFilePassword(m_zf, m_outer.m_password.c_str());
+      size_t err = unzOpenCurrentFilePassword(m_zf, m_outer.m_password.c_str());
       if (UNZ_OK != err)
       {
         std::stringstream str;
@@ -419,7 +419,7 @@ namespace zipper {
         if (!locateEntry(it->name))
           continue;
 
-        std::string alternativeName = destination.empty() ? "" : destination + osSeparator;
+        std::string alternativeName = destination.empty() ? "" : destination + CDirEntry::Separator;
 
         if (alternativeNames.find(it->name) != alternativeNames.end())
           alternativeName += alternativeNames.at(it->name);
@@ -434,11 +434,8 @@ namespace zipper {
 
     bool extractEntry(const std::string& name, const std::string& destination)
     {
-      std::string outputFile = destination.empty() ? name : destination + osSeparator + name;
-
-      if (locateEntry(name))
+      std::string outputFile = destination.empty() ? name : destination + CDirEntry::Separator + name;
       {
-        ZipEntry entry = currentEntryInfo();
         return extractCurrentEntryToFile(entry, outputFile);
       }
       else
