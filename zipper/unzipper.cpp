@@ -239,8 +239,7 @@ namespace zipper {
 
       if (output_file.good())
       {
-        if (extractToStream(output_file, info))
-          err = UNZ_OK;
+    	err = extractToStream(output_file, info);
 
         output_file.close();
 
@@ -404,7 +403,11 @@ namespace zipper {
       return entrylist;
     }
 
-    
+#ifdef _WIN32
+    static constexpr auto osSeparator = '\\';
+#else
+	static constexpr auto osSeparator = '/';
+#endif
 
     bool extractAll(const std::string& destination, const std::map<std::string, std::string>& alternativeNames)
     {
@@ -416,7 +419,7 @@ namespace zipper {
         if (!locateEntry(it->name))
           continue;
 
-        std::string alternativeName = destination.empty() ? "" : destination + "/";
+        std::string alternativeName = destination.empty() ? "" : destination + osSeparator;
 
         if (alternativeNames.find(it->name) != alternativeNames.end())
           alternativeName += alternativeNames.at(it->name);
@@ -431,7 +434,7 @@ namespace zipper {
 
     bool extractEntry(const std::string& name, const std::string& destination)
     {
-      std::string outputFile = destination.empty() ? name : destination + "\\" + name;
+      std::string outputFile = destination.empty() ? name : destination + osSeparator + name;
 
       if (locateEntry(name))
       {
